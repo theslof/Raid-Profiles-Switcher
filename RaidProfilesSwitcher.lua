@@ -30,10 +30,12 @@ function eventHandler(self, event, ...)
 	
     if GetRaidProfileOption(profile, "autoActivate".. groupSize .."Players") 
 	 and GetRaidProfileOption(profile, "autoActivateSpec"..spec) 
-	 and isPvP == GetRaidProfileOption(profile, "autoActivatePvP") 
+	 and isPvP == GetRaidProfileOption(profile, "autoActivatePvP")
 	 then
-      -- Everything seems to match! Activate the profile
-      CompactUnitFrameProfiles_ActivateRaidProfile(profile);
+      -- Everything seems to match! Activate the profile if it's not active:
+	  if GetActiveRaidProfile() ~= profile then
+       CompactUnitFrameProfiles_ActivateRaidProfile(profile);
+	  end
     end
    end
   end
