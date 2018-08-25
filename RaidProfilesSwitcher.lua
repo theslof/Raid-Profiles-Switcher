@@ -1,9 +1,9 @@
 local frame = CreateFrame("Frame");
 
 function eventHandler(self, event, ...)
- if ( HasLoadedCUFProfiles() ) then
+ if ( HasLoadedCUFProfiles() and not UnitAffectingCombat("player") ) then
   local groupSize = GetNumGroupMembers();
-  if IsInGroup() then
+  if ( IsInGroup() ) then
    local name, instanceType = GetInstanceInfo();
    if ( not name ) then
     -- We're in an unknown zone, abort for safety
@@ -15,25 +15,25 @@ function eventHandler(self, event, ...)
 
    -- Correct the group size to profile values
    if groupSize == 1 then groupSize = 2
-    elseif groupSize <= 3 then  
-    elseif groupSize <= 5 then groupSize = 5
-    elseif groupSize <= 10 then groupSize = 10 
-    elseif groupSize <= 15 then groupSize = 15 
-    elseif groupSize <= 25 then groupSize = 25 
-    elseif groupSize <= 40 then groupSize = 40
+    elseif ( groupSize <= 3 ) then  
+    elseif ( groupSize <= 5 ) then groupSize = 5
+    elseif ( groupSize <= 10 ) then groupSize = 10 
+    elseif ( groupSize <= 15 ) then groupSize = 15 
+    elseif ( groupSize <= 25 ) then groupSize = 25 
+    elseif ( groupSize <= 40 ) then groupSize = 40
    end
    
    -- Loop through all profiles and check if any of them match
-   for i=1, GetNumRaidProfiles() do
+   for ( i=1, GetNumRaidProfiles() ) do
     -- Get the profile name
     local profile = GetRaidProfileName(i);
 	
-    if GetRaidProfileOption(profile, "autoActivate".. groupSize .."Players") 
+    if ( GetRaidProfileOption(profile, "autoActivate".. groupSize .."Players") 
 	 and GetRaidProfileOption(profile, "autoActivateSpec"..spec) 
-	 and isPvP == GetRaidProfileOption(profile, "autoActivatePvP")
+	 and isPvP == GetRaidProfileOption(profile, "autoActivatePvP") )
 	 then
       -- Everything seems to match! Activate the profile if it's not active:
-	  if GetActiveRaidProfile() ~= profile then
+	  if ( GetActiveRaidProfile() ~= profile ) then
        CompactUnitFrameProfiles_ActivateRaidProfile(profile);
 	  end
     end
