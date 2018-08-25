@@ -3,46 +3,38 @@ local frame = CreateFrame("Frame");
 function eventHandler(self, event, ...)
  if ( HasLoadedCUFProfiles() ) then
   local groupSize = GetNumGroupMembers();
-  if IsInGroup() and groupSize > 1 then
-   local name, instanceType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic = GetInstanceInfo();
+  if IsInGroup() then
+   local name, instanceType = GetInstanceInfo();
    if ( not name ) then
     -- We're in an unknown zone, abort for safety
     return;
    end
    
-   local isPvP = instanceType == "arena" or instanceType == "pvp";
+   local isPvP = instanceType == "arena" or instanceType == "pvp" or C_PvP.IsWarModeDesired();
    local spec = GetSpecialization();
 
    -- Correct the group size to profile values
-   if groupSize > 3 then
-    if groupSize <= 5 then groupSize = 5 else
-     if groupSize <= 10 then groupSize = 10 else
-      if groupSize <= 15 then groupSize = 15 else
-       if groupSize <= 25 then groupSize = 25 else
-        if groupSize <= 40 then groupSize = 40 end 
-       end
-      end
-     end
-    end
+   if groupSize == 1 then groupSize = 2
+    elseif groupSize <= 3 then  
+    elseif groupSize <= 5 then groupSize = 5
+    elseif groupSize <= 10 then groupSize = 10 
+    elseif groupSize <= 15 then groupSize = 15 
+    elseif groupSize <= 25 then groupSize = 25 
+    elseif groupSize <= 40 then groupSize = 40
    end
    
    -- Loop through all profiles and check if any of them match
    for i=1, GetNumRaidProfiles() do
-     -- Get the profile name
-     local profile = GetRaidProfileName(i);
-	 
-     if GetRaidProfileOption(profile, "autoActivate".. groupSize .."Players") then
-      -- Group size is OK!
-	  if spec == GetRaidProfileOption(profile, "autoActivateSpec"..spec) then
-	   -- Spec OK!
-	   if isPvP == GetRaidProfileOption(profile, "autoActivatePvP") then
-	    -- PvP OK
-		
-		-- Everything seems to match! Activate the profile
-	    CompactUnitFrameProfiles_ActivateRaidProfile(profile);
-	   end
-	  end
-	 end
+    -- Get the profile name
+    local profile = GetRaidProfileName(i);
+	
+    if GetRaidProfileOption(profile, "autoActivate".. groupSize .."Players") 
+	 and GetRaidProfileOption(profile, "autoActivateSpec"..spec) 
+	 and isPvP == GetRaidProfileOption(profile, "autoActivatePvP") 
+	 then
+      -- Everything seems to match! Activate the profile
+      CompactUnitFrameProfiles_ActivateRaidProfile(profile);
+    end
    end
   end
  end
